@@ -1,0 +1,44 @@
+name: Deploy WebApp
+on:
+  push:
+    branches:
+    - main
+    paths-ignore:
+    - '**/*.md'
+    - '**/*.gitignore'
+    - '**/*.gitattributes'
+    - '**/translations.yaml'
+  workflow_dispatch:
+    branches:
+    - main
+    paths-ignore:
+    - '**/*.md'
+    - '**/*.gitignore'
+    - '**/*.gitattributes'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+  staging:
+    needs: build
+    name: Deploy to staging
+    environment:
+        name: recette
+        url: http://a.fr
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+  deploy:
+    needs: staging
+    environment:
+      name: production
+      url: http://b.fr
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
